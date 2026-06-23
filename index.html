@@ -1,106 +1,145 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>厂务楼栋与配电管理 MVP v3.1</title>
-<style>
-:root{--bg:#f4f7fb;--card:#fff;--line:#dbe5f0;--text:#163040;--muted:#6b7c8f;--pri:#2563eb;--pri2:#dbeafe;--danger:#dc2626;--ok:#16a34a;--dark:#102030}
-*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,"Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text)}button,input,select,textarea{font:inherit}button{border:1px solid var(--line);background:#fff;border-radius:8px;padding:8px 12px;cursor:pointer}button.primary{background:var(--pri);color:#fff;border-color:var(--pri)}button.ghost{background:var(--pri2);color:#1d4ed8;border-color:#bfdbfe}.danger{color:var(--danger)}.small{font-size:12px;padding:5px 8px}.app{display:none;height:100vh;overflow:hidden}.login{height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#e0f2fe,#f8fafc)}.login-card{width:380px;background:#fff;border:1px solid var(--line);border-radius:18px;padding:28px;box-shadow:0 20px 60px #0001}.login-card h1{margin:0 0 18px;font-size:24px}.field{margin-bottom:12px}.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:5px}.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:9px 10px;background:#fff}.field textarea{min-height:74px}.side{width:250px;background:#0f172a;color:#dbeafe;padding:16px;overflow:auto}.brand{font-weight:800;font-size:18px;margin:8px 0 18px}.side button{width:100%;margin:4px 0;background:#1e293b;color:#e2e8f0;border-color:#334155;text-align:left}.side button.active{background:#2563eb;border-color:#2563eb}.main{flex:1;display:flex;flex-direction:column;min-width:0}.topbar{height:58px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;padding:0 18px}.content{flex:1;display:grid;grid-template-columns:280px 1fr 360px;gap:14px;padding:14px;overflow:hidden}.card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px #00000008;overflow:hidden}.card-h{padding:12px 14px;border-bottom:1px solid var(--line);font-weight:700;display:flex;align-items:center;justify-content:space-between;gap:8px}.card-b{padding:12px;overflow:auto}.tree{font-size:14px}.tree .area,.tree .building,.tree .floor{padding:8px;border-radius:8px;margin:3px 0;cursor:pointer}.tree .area{font-weight:800}.tree .building{padding-left:22px}.tree .floor{padding-left:42px;color:#334155}.tree .active{background:#dbeafe;color:#1d4ed8;font-weight:700}.tabs{display:flex;gap:6px;flex-wrap:wrap}.tabs button.active{background:var(--pri);color:#fff;border-color:var(--pri)}.workspace{display:grid;grid-template-rows:auto 1fr;gap:12px;min-width:0}.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.viewer{position:relative;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;min-height:0}.viewer canvas{width:100%;height:100%;display:block;background:#fbfdff}.panel{display:grid;gap:12px;overflow:auto}.list-item{border:1px solid var(--line);border-radius:10px;padding:10px;margin:8px 0;background:#fff}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}.muted{color:var(--muted);font-size:12px}.pill{display:inline-block;padding:2px 8px;border-radius:999px;background:#e5e7eb;font-size:12px}.pill.ok{background:#dcfce7;color:#166534}.pill.warn{background:#fef3c7;color:#92400e}.modal{position:fixed;inset:0;background:#0006;display:none;align-items:center;justify-content:center;z-index:20}.modal.show{display:flex}.modal-card{width:min(1080px,94vw);max-height:90vh;background:#fff;border-radius:16px;overflow:hidden;display:flex;flex-direction:column}.modal-body{padding:14px;overflow:auto}.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.section-title{font-weight:800;color:#1d4ed8;border-left:4px solid #2563eb;padding-left:8px;margin:14px 0 8px}.table{width:100%;border-collapse:collapse;font-size:13px}.table th,.table td{border:1px solid var(--line);padding:7px;text-align:left}.table th{background:#f8fafc}.asset{display:flex;align-items:center;gap:8px}.dot{width:13px;height:13px;border-radius:50%;background:#2563eb}.dot.box{background:#f59e0b}.dot.device{background:#10b981}.help{background:#f0f9ff;border:1px solid #bae6fd;color:#075985;border-radius:10px;padding:10px;font-size:13px}.split{display:grid;grid-template-columns:1fr 1fr;gap:10px}.hidden{display:none!important}@media(max-width:1100px){.content{grid-template-columns:250px 1fr}.panel{display:none}.grid4{grid-template-columns:1fr 1fr}}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>厂务管理系统 MVP Latest</title>
+  <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-<div class="login" id="login">
+<div id="login" class="login-page">
   <div class="login-card">
-    <h1>厂务楼栋与配电管理 MVP</h1>
-    <div class="field"><label>管理员账号</label><input id="loginUser" value="admin"></div>
-    <div class="field"><label>密码</label><input id="loginPass" type="password" value="admin123"></div>
-    <button class="primary" style="width:100%" onclick="login()">登录</button>
-    <p class="muted">账号：admin　密码：admin123</p>
+    <h1>厂务管理系统</h1>
+    <p>设施、楼层、配电箱、三维/二维管理 MVP</p>
+    <input id="username" placeholder="账号：admin" />
+    <input id="password" type="password" placeholder="密码：admin123" />
+    <button onclick="login()">登录</button>
+    <small>数据保存在当前浏览器 LocalStorage</small>
   </div>
 </div>
-<div class="app" id="app">
-  <aside class="side">
-    <div class="brand">🏭 厂务管理系统</div>
-    <button class="active" onclick="setPage('floor')">楼层视图</button>
-    <button onclick="setPage('edit')">楼层编辑</button>
-    <button onclick="setPage('building')">楼栋三维</button>
-    <button onclick="setPage('asset')">设备/配电箱</button>
-    <button onclick="setPage('category')">设备类别字段</button>
-    <button onclick="exportJson()">导出JSON</button>
-    <button onclick="document.getElementById('jsonIn').click()">导入JSON</button>
-    <input type="file" id="jsonIn" accept="application/json" class="hidden" onchange="importJson(event)">
+
+<div id="app" class="app hidden">
+  <aside class="sidebar">
+    <div class="brand">厂务管理系统</div>
+    <button class="nav active" onclick="switchModule('map')">楼层视图</button>
+    <button class="nav" onclick="switchModule('building')">楼栋三维</button>
+    <button class="nav" onclick="switchModule('assets')">设备管理</button>
+    <button class="nav" onclick="switchModule('settings')">类别字段</button>
+    <button class="nav" onclick="switchModule('data')">数据导入导出</button>
   </aside>
+
   <main class="main">
-    <div class="topbar"><strong id="title">楼层视图</strong><span class="muted" id="crumb"></span><span style="margin-left:auto" class="muted">数据保存在浏览器 localStorage</span></div>
-    <div class="content">
-      <section class="card"><div class="card-h">区域/楼栋/楼层 <button class="small primary" onclick="openStructure()">新增</button></div><div class="card-b"><div id="tree" class="tree"></div></div></section>
-      <section class="workspace">
-        <div class="card"><div class="card-b"><div id="mainToolbar" class="toolbar"></div></div></div>
-        <div class="viewer"><canvas id="cv" width="1100" height="700"></canvas></div>
-      </section>
-      <section class="panel" id="rightPanel"></section>
-    </div>
+    <header class="topbar">
+      <div>
+        <h2 id="pageTitle">楼层视图</h2>
+        <span id="currentPath">民企区 / 5栋 / 1F</span>
+      </div>
+      <div class="actions">
+        <button onclick="saveData()">保存</button>
+        <button onclick="resetDemo()">恢复示例</button>
+      </div>
+    </header>
+
+    <section id="module-map" class="module grid-layout">
+      <div class="panel tree-panel">
+        <h3>区域楼层</h3>
+        <div class="row"><select id="areaSelect"></select><button onclick="addArea()">+区域</button></div>
+        <div class="row"><select id="buildingSelect"></select><button onclick="addBuilding()">+楼栋</button></div>
+        <div class="row"><select id="floorSelect"></select><button onclick="addFloor()">+楼层</button></div>
+        <hr>
+        <h3>视图模式</h3>
+        <div class="segmented">
+          <button id="btn-top" onclick="setView('top')">俯视图</button>
+          <button id="btn-45" onclick="setView('iso')">45°三维斜视</button>
+          <button id="btn-edit" onclick="setView('edit')">楼层编辑</button>
+        </div>
+        <h3>新增点位</h3>
+        <button onclick="addAsset('配电箱')">+ 配电箱</button>
+        <button onclick="addAsset('空调机组')">+ 空调机组</button>
+        <button onclick="addAsset('水泵')">+ 水泵</button>
+      </div>
+
+      <div class="panel canvas-panel">
+        <div class="canvas-toolbar">
+          <strong id="viewName">俯视图</strong>
+          <span>点击设备点位可编辑信息；编辑模式下可绘制墙体。</span>
+        </div>
+        <div id="floorCanvas" class="floor-canvas"></div>
+      </div>
+
+      <div id="editPanel" class="panel edit-panel">
+        <h3>楼层编辑</h3>
+        <label>层高(m)<input id="floorHeight" type="number" step="0.1" /></label>
+        <label>俯视图长度(m)<input id="floorLength" type="number" step="0.1" /></label>
+        <label>俯视图宽度(m)<input id="floorWidth" type="number" step="0.1" /></label>
+        <label>导入平面图<input id="planUpload" type="file" accept="image/*" onchange="uploadPlan(event)" /></label>
+        <button onclick="toggleDrawWall()" id="drawWallBtn">开始绘制墙体</button>
+        <button onclick="autoGenerateWalls()">根据图片/尺寸生成墙体</button>
+        <button onclick="clearWalls()">清空墙体</button>
+        <button onclick="applyFloorSettings()">生成单层三维图</button>
+        <p class="hint">绘制墙体：点击起点和终点生成一段墙。墙体会用于45°三维示意。</p>
+      </div>
+    </section>
+
+    <section id="module-building" class="module hidden">
+      <div class="panel split">
+        <div>
+          <h3>楼栋管理</h3>
+          <label>楼栋名称<input id="bName" /></label>
+          <label>X位置<input id="bX" type="number" /></label>
+          <label>Y位置<input id="bY" type="number" /></label>
+          <label>旋转角度<input id="bRot" type="number" /></label>
+          <button onclick="saveBuildingEdit()">保存楼栋位置</button>
+          <p class="hint">楼栋三维尺寸由各楼层的俯视图长度、宽度、层高累计生成。</p>
+        </div>
+        <div>
+          <h3>楼栋三维预览</h3>
+          <div id="building3d" class="building-3d"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="module-assets" class="module hidden">
+      <div class="panel">
+        <h3>设备列表</h3>
+        <table id="assetTable"></table>
+      </div>
+    </section>
+
+    <section id="module-settings" class="module hidden">
+      <div class="panel split">
+        <div>
+          <h3>设备类别</h3>
+          <div id="categoryList"></div>
+          <button onclick="addCategory()">+ 新增类别</button>
+        </div>
+        <div>
+          <h3>类别自定义字段</h3>
+          <div id="fieldList"></div>
+          <button onclick="addField()">+ 新增字段</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="module-data" class="module hidden">
+      <div class="panel">
+        <h3>数据导入导出</h3>
+        <button onclick="exportJson()">导出 JSON</button>
+        <input type="file" accept="application/json" onchange="importJson(event)">
+        <textarea id="jsonBox" placeholder="导出的JSON会显示在这里"></textarea>
+      </div>
+    </section>
   </main>
 </div>
 
-<div class="modal" id="modal"><div class="modal-card"><div class="card-h"><span id="modalTitle">编辑</span><button onclick="closeModal()">×</button></div><div class="modal-body" id="modalBody"></div></div></div>
+<div id="modal" class="modal hidden">
+  <div class="modal-card large">
+    <div class="modal-head"><h3 id="modalTitle">设备信息</h3><button onclick="closeModal()">×</button></div>
+    <div id="modalBody"></div>
+    <div class="modal-foot"><button onclick="closeModal()">取消</button><button onclick="saveAssetModal()">保存</button></div>
+  </div>
+</div>
 
-<script>
-const LS='facility_mvp_v31';
-let data = JSON.parse(localStorage.getItem(LS)||'null') || seed();
-let state={page:'floor', areaId:'a1', buildingId:'b5', floorId:'f51', view:'top', editTool:'wall', selectedAsset:null, dragging:false, dragKind:null, dragIndex:-1, tmpWall:null};
-const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
-function seed(){return {areas:[{id:'a1',name:'民企区'}],buildings:[{id:'b1',areaId:'a1',name:'1栋',x:30,y:20,w:36,d:24,rotation:0,heightOffset:0},{id:'b5',areaId:'a1',name:'5栋',x:120,y:25,w:48,d:32,rotation:0,heightOffset:0},{id:'b6',areaId:'a1',name:'6栋',x:210,y:55,w:38,d:28,rotation:0,heightOffset:0}],floors:[{id:'f11',buildingId:'b1',name:'1F',height:3.6,w:36,d:24,walls:[{x1:80,y1:90,x2:470,y2:90},{x1:470,y1:90,x2:470,y2:340},{x1:470,y1:340,x2:80,y2:340},{x1:80,y1:340,x2:80,y2:90},{x1:250,y1:90,x2:250,y2:340}],img:''},{id:'f51',buildingId:'b5',name:'1F',height:3.8,w:48,d:32,walls:[{x1:90,y1:80,x2:600,y2:80},{x1:600,y1:80,x2:600,y2:420},{x1:600,y1:420,x2:90,y2:420},{x1:90,y1:420,x2:90,y2:80},{x1:280,y1:80,x2:280,y2:420},{x1:90,y1:250,x2:600,y2:250}],img:''},{id:'f52',buildingId:'b5',name:'2F',height:3.6,w:48,d:32,walls:[{x1:100,y1:100,x2:560,y2:100},{x1:560,y1:100,x2:560,y2:390},{x1:560,y1:390,x2:100,y2:390},{x1:100,y1:390,x2:100,y2:100}],img:''},{id:'f61',buildingId:'b6',name:'1F',height:3.6,w:38,d:28,walls:[],img:''}],assets:[{id:'e1',floorId:'f51',type:'配电箱',name:'1F配电箱A01',x:190,y:150,box:{code:'DB-5-1F-001',incomingCable:'YJV-4X95+1X50',incomingSwitch:'QF1-160A/3P',voltage:'380V',upperBox:'DB-5-1F-000',upperSwitch:'MCCB-250A/3P',mainSwitch:'MCCB-250A/3P',outgoing:[{no:'QF2',switch:'63A/3P',load:'照明配电'},{no:'QF3',switch:'32A/3P',load:'插座配电'}]}},{id:'e2',floorId:'f51',type:'空调机组',name:'空调机组-1',x:420,y:330,custom:{型号:'MDV-250W',品牌:'美的',保养内容:'清洗过滤网、检查冷媒、紧固端子',保养周期:'每月',下次保养:'2024-08-01'}}],categories:[{name:'空调机组',fields:['型号','品牌','额定功率(kW)','保养内容','保养周期','下次保养','责任人']},{name:'冷水机组',fields:['型号','制冷量','冷媒','保养内容','保养周期','下次保养']},{name:'空压机',fields:['型号','压力','流量','保养内容','保养周期','下次保养']},{name:'配电箱',fields:[]}]} }
-function save(){localStorage.setItem(LS,JSON.stringify(data));render()}
-function login(){if(loginUser.value==='admin'&&loginPass.value==='admin123'){login.style.display='none';app.style.display='flex';render()}else alert('账号或密码错误')}
-function current(){return {area:data.areas.find(x=>x.id===state.areaId), building:data.buildings.find(x=>x.id===state.buildingId), floor:data.floors.find(x=>x.id===state.floorId)}}
-function setPage(p){state.page=p;document.querySelectorAll('.side button').forEach(b=>b.classList.remove('active'));event?.target?.classList.add('active');render()}
-function render(){renderTree();renderPage();draw()}
-function renderTree(){const t=document.getElementById('tree');let html='';data.areas.forEach(a=>{html+=`<div class="area ${a.id===state.areaId?'active':''}" onclick="state.areaId='${a.id}';render()">▾ ${a.name}</div>`;data.buildings.filter(b=>b.areaId===a.id).forEach(b=>{html+=`<div class="building ${b.id===state.buildingId?'active':''}" onclick="state.areaId='${a.id}';state.buildingId='${b.id}';state.floorId=(data.floors.find(f=>f.buildingId==='${b.id}')||{}).id;render()">▾ ${b.name}</div>`;data.floors.filter(f=>f.buildingId===b.id).forEach(f=>html+=`<div class="floor ${f.id===state.floorId?'active':''}" onclick="state.areaId='${a.id}';state.buildingId='${b.id}';state.floorId='${f.id}';render()">└ ${f.name}</div>`)})});t.innerHTML=html}
-function renderPage(){const {building,floor}=current();crumb.textContent=building&&floor?`/ ${building.name} / ${floor.name}`:'';let tb='',rp='';title.textContent={floor:'楼层视图',edit:'楼层编辑',building:'楼栋三维',asset:'设备/配电箱',category:'设备类别字段'}[state.page];
- if(state.page==='floor'){tb=`<div class="tabs"><button onclick="state.view='top';render()" class="${state.view==='top'?'active':''}">俯视图</button><button onclick="state.view='iso';render()" class="${state.view==='iso'?'active':''}">45°三维斜视图</button></div><button class="ghost" onclick="state.page='edit';render()">进入楼层编辑</button><button onclick="openAsset()">新增设备/配电箱</button>`;rp=floorInfo()}
- if(state.page==='edit'){tb=`<button class="${state.editTool==='wall'?'primary':''}" onclick="state.editTool='wall'">绘制墙体</button><button onclick="clearWalls()">清空墙体</button><button onclick="document.getElementById('imgIn').click()">导入平面图图片</button><button onclick="imageToWalls()">根据图片生成墙体</button><button onclick="saveFloorSize()">保存层高/尺寸</button><input type="file" id="imgIn" accept="image/*" class="hidden" onchange="loadPlanImg(event)">`;rp=editPanel()}
- if(state.page==='building'){tb=`<button class="primary" onclick="draw()">刷新三维楼栋</button><button onclick="openBuildingEdit()">编辑楼栋位置/尺寸</button>`;rp=buildingPanel()}
- if(state.page==='asset'){tb=`<button class="primary" onclick="openAsset()">新增设备/配电箱</button><button onclick="state.page='category';render()">维护设备类别</button>`;rp=assetPanel()}
- if(state.page==='category'){tb=`<button class="primary" onclick="openCategory()">新增类别</button>`;rp=categoryPanel()}
- mainToolbar.innerHTML=tb;rightPanel.innerHTML=rp}
-function floorInfo(){const {floor}=current();return `<div class="card"><div class="card-h">楼层信息</div><div class="card-b"><p><b>${floor?.name||''}</b></p><p>层高：${floor?.height||''} m</p><p>平面尺寸：${floor?.w||''}m × ${floor?.d||''}m</p><div class="help">选择“俯视图”查看平面图；选择“45°三维斜视图”根据墙体和层高生成单层三维。</div></div></div><div class="card"><div class="card-h">本层设备</div><div class="card-b">${data.assets.filter(a=>a.floorId===state.floorId).map(assetHtml).join('')||'<p class="muted">暂无设备</p>'}</div></div>`}
-function editPanel(){const {floor}=current();return `<div class="card"><div class="card-h">楼层参数</div><div class="card-b"><div class="row"><div class="field"><label>长度(m)</label><input id="fw" value="${floor.w}"></div><div class="field"><label>宽度(m)</label><input id="fd" value="${floor.d}"></div></div><div class="field"><label>层高(m)</label><input id="fh" value="${floor.height}"></div><div class="help">绘制：在画布上按住鼠标拖动生成墙线。导入图片后，可点击“根据图片生成墙体”自动识别深色横竖线作为墙体。</div></div></div>`}
-function buildingPanel(){return `<div class="card"><div class="card-h">楼栋管理</div><div class="card-b">${data.buildings.map(b=>`<div class="list-item"><b>${b.name}</b><p class="muted">尺寸 ${b.w}×${b.d}m，位置 X:${b.x} Y:${b.y}，旋转:${b.rotation}°</p><button class="small" onclick="state.buildingId='${b.id}';openBuildingEdit()">编辑</button></div>`).join('')}<div class="help">楼栋三维根据俯视图尺寸生成，可编辑位置、长宽、旋转角度。拖动画布中的楼栋可调整位置。</div></div></div>`}
-function assetPanel(){return `<div class="card"><div class="card-h">资产列表</div><div class="card-b">${data.assets.map(assetHtml).join('')}</div></div>`}
-function categoryPanel(){return `<div class="card"><div class="card-h">设备类别与自定义字段</div><div class="card-b">${data.categories.map((c,i)=>`<div class="list-item"><b>${c.name}</b><p class="muted">字段：${c.fields.join('、')||'使用专用模板'}</p><button class="small" onclick="openCategory(${i})">编辑</button> <button class="small danger" onclick="data.categories.splice(${i},1);save()">删除</button></div>`).join('')}</div></div>`}
-function assetHtml(a){return `<div class="list-item asset"><span class="dot ${a.type==='配电箱'?'box':'device'}"></span><div style="flex:1"><b>${a.name}</b><p class="muted">${a.type} / ${floorName(a.floorId)}</p></div><button class="small" onclick="openAsset('${a.id}')">编辑</button></div>`}
-function floorName(id){let f=data.floors.find(x=>x.id===id),b=data.buildings.find(x=>x.id===f?.buildingId);return `${b?.name||''}${f?.name||''}`}
-function draw(){ctx.clearRect(0,0,cv.width,cv.height);ctx.fillStyle='#f8fafc';ctx.fillRect(0,0,cv.width,cv.height); if(state.page==='building'){drawBuildings();return} const {floor}=current(); if(!floor)return; if(state.view==='iso' && state.page!=='edit') drawFloorIso(floor); else drawFloorTop(floor);}
-function drawFloorTop(floor){grid(); if(floor.img){let img=new Image();img.onload=()=>{ctx.globalAlpha=.35;ctx.drawImage(img,60,50,650,520);ctx.globalAlpha=1;drawWallsAndAssets(floor)};img.src=floor.img}else drawWallsAndAssets(floor)}
-function drawWallsAndAssets(floor){ctx.lineCap='round';ctx.strokeStyle='#334155';ctx.lineWidth=7;floor.walls.forEach(w=>{ctx.beginPath();ctx.moveTo(w.x1,w.y1);ctx.lineTo(w.x2,w.y2);ctx.stroke()}); if(state.tmpWall){ctx.strokeStyle='#2563eb';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(state.tmpWall.x1,state.tmpWall.y1);ctx.lineTo(state.tmpWall.x2,state.tmpWall.y2);ctx.stroke()} data.assets.filter(a=>a.floorId===floor.id).forEach(a=>{ctx.fillStyle=a.type==='配电箱'?'#f59e0b':'#10b981';ctx.beginPath();ctx.arc(a.x,a.y,10,0,Math.PI*2);ctx.fill();ctx.fillStyle='#111827';ctx.font='14px sans-serif';ctx.fillText(a.name,a.x+14,a.y+5)})}
-function grid(){ctx.strokeStyle='#e5e7eb';ctx.lineWidth=1;for(let x=0;x<cv.width;x+=25){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,cv.height);ctx.stroke()}for(let y=0;y<cv.height;y+=25){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(cv.width,y);ctx.stroke()}}
-function iso(x,y,z=0){return {x:430+(x-y)*0.75,y:120+(x+y)*0.35-z}}
-function drawFloorIso(floor){ctx.fillStyle='#eef2f7';ctx.fillRect(0,0,cv.width,cv.height);const scale=10,h=floor.height*28;ctx.fillStyle='#e5e7eb';ctx.strokeStyle='#94a3b8';let p1=iso(0,0,0),p2=iso(floor.w*scale,0,0),p3=iso(floor.w*scale,floor.d*scale,0),p4=iso(0,floor.d*scale,0);poly([p1,p2,p3,p4],'#f8fafc','#94a3b8');floor.walls.forEach(w=>{let a=iso((w.x1-80)/10,(w.y1-80)/10,0),b=iso((w.x2-80)/10,(w.y2-80)/10,0),c=iso((w.x2-80)/10,(w.y2-80)/10,h),d=iso((w.x1-80)/10,(w.y1-80)/10,h);poly([a,b,c,d],'#cbd5e1','#64748b')});data.assets.filter(a=>a.floorId===floor.id).forEach(a=>{let p=iso((a.x-80)/10,(a.y-80)/10,0);ctx.fillStyle=a.type==='配电箱'?'#f59e0b':'#10b981';ctx.fillRect(p.x-7,p.y-22,14,18);ctx.fillStyle='#0f172a';ctx.fillText(a.name,p.x+10,p.y-12)})}
-function drawBuildings(){ctx.fillStyle='#e8f1e4';ctx.fillRect(0,0,cv.width,cv.height);data.buildings.forEach(b=>{let floors=data.floors.filter(f=>f.buildingId===b.id);let h=floors.reduce((s,f)=>s+Number(f.height||3.6),0)*12;let x=b.x*3,y=b.y*3,w=b.w*4,d=b.d*4;let p1=iso(x,y,0),p2=iso(x+w,y,0),p3=iso(x+w,y+d,0),p4=iso(x,y+d,0),q1=iso(x,y,h),q2=iso(x+w,y,h),q3=iso(x+w,y+d,h),q4=iso(x,y+d,h);poly([p1,p2,p3,p4],'#d1d5db','#94a3b8');poly([q1,q2,q3,q4],'#e5e7eb','#64748b');poly([p2,p3,q3,q2],'#cbd5e1','#64748b');poly([p3,p4,q4,q3],'#b6c6d3','#64748b');ctx.fillStyle='#0f172a';ctx.font='bold 18px sans-serif';ctx.fillText(b.name,q1.x+20,q1.y-8);})}
-function poly(ps,fill,stroke){ctx.beginPath();ctx.moveTo(ps[0].x,ps[0].y);ps.slice(1).forEach(p=>ctx.lineTo(p.x,p.y));ctx.closePath();ctx.fillStyle=fill;ctx.fill();ctx.strokeStyle=stroke;ctx.lineWidth=1;ctx.stroke()}
-cv.onmousedown=e=>{let r=cv.getBoundingClientRect(),x=(e.clientX-r.left)*cv.width/r.width,y=(e.clientY-r.top)*cv.height/r.height;if(state.page==='edit'){state.tmpWall={x1:x,y1:y,x2:x,y2:y};state.dragging=true}else{let hit=data.assets.find(a=>a.floorId===state.floorId&&Math.hypot(a.x-x,a.y-y)<15);if(hit){openAsset(hit.id)}}}
-cv.onmousemove=e=>{if(!state.dragging)return;let r=cv.getBoundingClientRect(),x=(e.clientX-r.left)*cv.width/r.width,y=(e.clientY-r.top)*cv.height/r.height;if(state.tmpWall){state.tmpWall.x2=x;state.tmpWall.y2=y;draw()}}
-cv.onmouseup=e=>{if(state.tmpWall){let f=current().floor;f.walls.push({...state.tmpWall});state.tmpWall=null;state.dragging=false;save()}}
-function openStructure(){showModal('新增区域/楼栋/楼层',`<div class="row3"><div class="field"><label>区域名</label><input id="newArea" placeholder="如：德意区"></div><div class="field"><label>楼栋名</label><input id="newBuilding" placeholder="如：7栋"></div><div class="field"><label>楼层名</label><input id="newFloor" placeholder="如：1F"></div></div><button class="primary" onclick="addStructure()">保存</button>`)}
-function addStructure(){let a=current().area;if(newArea.value){a={id:'a'+Date.now(),name:newArea.value};data.areas.push(a);state.areaId=a.id}let b=current().building;if(newBuilding.value){b={id:'b'+Date.now(),areaId:state.areaId,name:newBuilding.value,x:60,y:60,w:40,d:30,rotation:0,heightOffset:0};data.buildings.push(b);state.buildingId=b.id}if(newFloor.value){let f={id:'f'+Date.now(),buildingId:state.buildingId,name:newFloor.value,height:3.6,w:b?.w||40,d:b?.d||30,walls:[],img:''};data.floors.push(f);state.floorId=f.id}closeModal();save()}
-function saveFloorSize(){let f=current().floor;f.w=Number(fw.value);f.d=Number(fd.value);f.height=Number(fh.value);save()}
-function clearWalls(){if(confirm('清空当前楼层墙体？')){current().floor.walls=[];save()}}
-function loadPlanImg(e){let file=e.target.files[0];if(!file)return;let rd=new FileReader();rd.onload=()=>{current().floor.img=rd.result;save()};rd.readAsDataURL(file)}
-function imageToWalls(){let f=current().floor;if(!f.img)return alert('请先导入平面图片');let img=new Image();img.onload=()=>{let off=document.createElement('canvas'),c=off.getContext('2d');off.width=650;off.height=520;c.drawImage(img,0,0,650,520);let lines=[];for(let y=0;y<520;y+=20){let count=0,min=999,max=0;for(let x=0;x<650;x+=4){let d=c.getImageData(x,y,1,1).data;if(d[0]+d[1]+d[2]<260){count++;min=Math.min(min,x);max=Math.max(max,x)}}if(count>35)lines.push({x1:min+60,y1:y+50,x2:max+60,y2:y+50})}for(let x=0;x<650;x+=20){let count=0,min=999,max=0;for(let y=0;y<520;y+=4){let d=c.getImageData(x,y,1,1).data;if(d[0]+d[1]+d[2]<260){count++;min=Math.min(min,y);max=Math.max(max,y)}}if(count>35)lines.push({x1:x+60,y1:min+50,x2:x+60,y2:max+50})}f.walls=lines.slice(0,80);save();alert('已根据深色线条生成墙体，可继续手动修正。')};img.src=f.img}
-function openAsset(id){let a=id?data.assets.find(x=>x.id===id):{id:'e'+Date.now(),floorId:state.floorId,type:'配电箱',name:'新配电箱',x:160,y:160,box:{outgoing:[]},custom:{}};let cats=data.categories.map(c=>`<option ${a.type===c.name?'selected':''}>${c.name}</option>`).join('');showModal('设备/配电箱信息填写',`<div class="row3"><div class="field"><label>设备名称</label><input id="aname" value="${a.name||''}"></div><div class="field"><label>类别</label><select id="atype" onchange="renderAssetForm('${a.id}')">${cats}</select></div><div class="field"><label>所在楼层</label><select id="afloor">${data.floors.map(f=>`<option value="${f.id}" ${a.floorId===f.id?'selected':''}>${floorName(f.id)}</option>`).join('')}</select></div></div><div id="assetForm"></div><button class="primary" onclick="saveAsset('${id||''}')">保存</button> <button onclick="closeModal()">取消</button>`);window.tmpAsset=JSON.parse(JSON.stringify(a));renderAssetForm(a.id)}
-function renderAssetForm(){let type=document.getElementById('atype').value,box=window.tmpAsset.box||{},custom=window.tmpAsset.custom||{};let html='';if(type==='配电箱'){let rows=(box.outgoing||[]).map((r,i)=>`<tr><td><input value="${r.no||''}" data-out="no" data-i="${i}"></td><td><input value="${r.switch||''}" data-out="switch" data-i="${i}"></td><td><input value="${r.cable||''}" data-out="cable" data-i="${i}"></td><td><input value="${r.load||''}" data-out="load" data-i="${i}"></td><td><button class="small danger" onclick="window.tmpAsset.box.outgoing.splice(${i},1);renderAssetForm()">删除</button></td></tr>`).join('');html=`<div class="section-title">配电箱基础信息</div><div class="grid4">${inp('配电箱编号','code',box.code)}${inp('配电箱名称','boxName',box.boxName||window.tmpAsset.name)}${inp('额定电压','voltage',box.voltage)}${inp('安装位置','location',box.location)}${inp('负责人','owner',box.owner)}${inp('投用日期','startDate',box.startDate,'date')}${inp('柜体型号','model',box.model)}${inp('备注','remark',box.remark)}</div><div class="section-title">进线信息</div><div class="grid4">${inp('进线电缆型号','incomingCable',box.incomingCable)}${inp('进线回路编号','incomingCircuit',box.incomingCircuit)}${inp('进线开关','incomingSwitch',box.incomingSwitch)}${inp('进线电缆长度(m)','incomingLength',box.incomingLength)}${inp('上级配电箱','upperBox',box.upperBox)}${inp('上级出线开关','upperSwitch',box.upperSwitch)}${inp('上级配电箱编号','upperCode',box.upperCode)}${inp('进线电流(A)','incomingCurrent',box.incomingCurrent)}</div><div class="section-title">总开关/保护信息</div><div class="grid4">${inp('总开关型号','mainSwitch',box.mainSwitch)}${inp('总开关容量(A)','mainCapacity',box.mainCapacity)}${inp('分断能力(kA)','breakingCapacity',box.breakingCapacity)}${inp('漏保/保护类型','protection',box.protection)}</div><div class="section-title">出线开关/负载</div><table class="table"><tr><th>回路编号</th><th>出线开关</th><th>出线电缆</th><th>负载名称/下级电箱</th><th>操作</th></tr>${rows}</table><button class="small ghost" onclick="window.tmpAsset.box.outgoing.push({});renderAssetForm()">+ 新增出线回路</button>`}else{let cat=data.categories.find(c=>c.name===type);html=`<div class="section-title">${type} 自定义信息</div><div class="grid4">${(cat?.fields||[]).map(k=>`<div class="field"><label>${k}</label><input data-custom="${k}" value="${custom[k]||''}"></div>`).join('')}</div><div class="section-title">保养计划</div><div class="grid4"><div class="field"><label>保养内容</label><textarea data-custom="保养内容">${custom['保养内容']||''}</textarea></div><div class="field"><label>保养周期</label><input data-custom="保养周期" value="${custom['保养周期']||''}"></div><div class="field"><label>上次保养</label><input type="date" data-custom="上次保养" value="${custom['上次保养']||''}"></div><div class="field"><label>下次保养</label><input type="date" data-custom="下次保养" value="${custom['下次保养']||''}"></div></div>`}document.getElementById('assetForm').innerHTML=html}
-function inp(label,key,val='',type='text'){return `<div class="field"><label>${label}</label><input type="${type}" data-box="${key}" value="${val||''}"></div>`}
-function saveAsset(id){let a=id?data.assets.find(x=>x.id===id):window.tmpAsset;a.name=aname.value;a.type=atype.value;a.floorId=afloor.value;if(a.type==='配电箱'){a.box=a.box||{};document.querySelectorAll('[data-box]').forEach(el=>a.box[el.dataset.box]=el.value);a.box.outgoing=a.box.outgoing||[];document.querySelectorAll('[data-out]').forEach(el=>{let i=+el.dataset.i;a.box.outgoing[i]=a.box.outgoing[i]||{};a.box.outgoing[i][el.dataset.out]=el.value})}else{a.custom=a.custom||{};document.querySelectorAll('[data-custom]').forEach(el=>a.custom[el.dataset.custom]=el.value)}if(!id)data.assets.push(a);closeModal();save()}
-function openCategory(i){let c=i!=null?data.categories[i]:{name:'',fields:[]};showModal('设备类别字段配置',`<div class="field"><label>类别名称</label><input id="cname" value="${c.name}"></div><div class="field"><label>自定义字段（一行一个）</label><textarea id="cfields">${c.fields.join('\n')}</textarea></div><button class="primary" onclick="saveCategory(${i==null?-1:i})">保存</button>`)}
-function saveCategory(i){let c={name:cname.value,fields:cfields.value.split('\n').map(x=>x.trim()).filter(Boolean)};if(i<0)data.categories.push(c);else data.categories[i]=c;closeModal();save()}
-function openBuildingEdit(){let b=current().building;showModal('楼栋三维尺寸/位置编辑',`<div class="grid4"><div class="field"><label>楼栋名称</label><input id="bn" value="${b.name}"></div><div class="field"><label>长度(m)</label><input id="bw" value="${b.w}"></div><div class="field"><label>宽度(m)</label><input id="bd" value="${b.d}"></div><div class="field"><label>X位置</label><input id="bx" value="${b.x}"></div><div class="field"><label>Y位置</label><input id="by" value="${b.y}"></div><div class="field"><label>旋转角度</label><input id="br" value="${b.rotation}"></div></div><button class="primary" onclick="saveBuildingEdit()">保存</button><div class="help">楼栋长宽也可由楼层俯视尺寸同步，楼层层高合计生成楼栋高度。</div>`)}
-function saveBuildingEdit(){let b=current().building;b.name=bn.value;b.w=+bw.value;b.d=+bd.value;b.x=+bx.value;b.y=+by.value;b.rotation=+br.value;closeModal();save()}
-function showModal(t,b){modalTitle.textContent=t;modalBody.innerHTML=b;modal.classList.add('show')}function closeModal(){modal.classList.remove('show')}
-function exportJson(){let blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='facility-data.json';a.click()}
-function importJson(e){let file=e.target.files[0];if(!file)return;let rd=new FileReader();rd.onload=()=>{data=JSON.parse(rd.result);save()};rd.readAsText(file)}
-render();
-</script>
+<script src="js/app.js"></script>
 </body>
 </html>
