@@ -1,33 +1,138 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>厂务设施与电缆电箱管理 MVP</title>
-<link rel="stylesheet" href="styles.css" />
-<script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
-<script src="https://unpkg.com/three@0.160.0/examples/js/controls/OrbitControls.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>厂务设施三维/二维管理 MVP</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-<div class="app">
-  <aside class="sidebar">
-    <div class="brand"><div class="logo">F</div><b>厂务管理平台</b></div>
-    <section><h4>区域</h4><button class="active" data-region="民企区域">民企区域</button><button data-region="德意区域">德意区域</button><button data-region="石岩区域">石岩区域</button></section>
-    <section><h4>楼栋</h4><button class="active" data-building="1栋">1栋 <span>待接入楼层</span></button><button data-building="5栋">5栋 <span>已接入 1F/2F</span></button><button data-building="6栋">6栋 <span>待接入楼层</span></button></section>
-    <section><h4>统一搜索</h4><input id="search" placeholder="搜索设备/电箱/电缆/区域" /></section>
-    <section><h4>视图</h4><button id="view3d" class="active">三维图</button><button id="view2d">平面图</button></section>
-  </aside>
-  <main>
-    <header><div><h1 id="title">民企区域总览</h1><p>设施、电箱、电缆台账与点检工单最小可运行版本</p></div><button id="addBtn">+ 新增资产</button></header>
-    <div class="stats"><div><b id="assetCount">0</b><span>资产</span></div><div><b id="abnormalCount">0</b><span>异常</span></div><div><b id="taskCount">0</b><span>待点检</span></div><div><b>二维码</b><span>扫码查看详情</span></div></div>
-    <div class="workspace">
-      <div class="map-card"><div class="tabs"><b id="mapTitle">三维厂区图</b><small>点击楼栋/点位查看详情</small></div><canvas id="threeCanvas"></canvas><svg id="floorMap" viewBox="0 0 900 520"></svg></div>
-      <div class="panel"><h3>资产详情</h3><div id="detail" class="empty">请选择楼栋、电箱或电缆点位</div></div>
+  <div id="loginPage" class="login-page">
+    <div class="login-card">
+      <div class="brand-mark">F</div>
+      <h1>厂务设施管理平台</h1>
+      <p>三维园区 / 二维楼层 / 设施点位 / 管理员维护</p>
+      <label>管理员账号</label>
+      <input id="loginUser" value="admin" autocomplete="username" />
+      <label>密码</label>
+      <input id="loginPass" type="password" value="admin123" autocomplete="current-password" />
+      <button id="loginBtn">登录系统</button>
+      <div class="hint">演示账号：admin / admin123</div>
+      <div id="loginError" class="error"></div>
     </div>
-    <div class="table-card"><div class="tabs"><b>资产台账</b><button id="exportBtn">导出 JSON</button></div><table><thead><tr><th>编号</th><th>名称</th><th>类型</th><th>位置</th><th>状态</th><th>负责人</th><th>操作</th></tr></thead><tbody id="assetTable"></tbody></table></div>
-  </main>
-</div>
-<div id="modal" class="modal hidden"><div class="modal-box"><h3>新增资产</h3><input id="mName" placeholder="名称，如 5栋1F动力配电箱"/><select id="mType"><option>电箱</option><option>电缆</option><option>空压机</option><option>冷水机</option><option>其他设施</option></select><input id="mLocation" placeholder="位置，如 民企区域 / 5栋 / 1F"/><input id="mOwner" placeholder="负责人"/><textarea id="mNote" placeholder="规格、上级电源、下级负载、巡检要求"></textarea><div class="row"><button id="saveBtn">保存</button><button id="cancelBtn">取消</button></div></div></div>
-<script src="app.js"></script>
+  </div>
+
+  <div id="app" class="app hidden">
+    <aside class="sidebar">
+      <div class="logo-row">
+        <div class="brand-mark small">F</div>
+        <div>
+          <strong>厂务设施管理</strong>
+          <span>Facility MVP</span>
+        </div>
+      </div>
+
+      <section>
+        <div class="section-title">区域</div>
+        <div id="areaList" class="nav-list"></div>
+        <button class="ghost admin-only" id="addAreaBtn">+ 新增区域</button>
+      </section>
+
+      <section>
+        <div class="section-title">楼栋 / 楼层</div>
+        <div id="buildingList" class="building-list"></div>
+        <button class="ghost admin-only" id="addBuildingBtn">+ 新增楼栋</button>
+      </section>
+
+      <section>
+        <div class="section-title">统一搜索</div>
+        <input id="searchInput" placeholder="搜索楼栋 / 楼层 / 设备" />
+      </section>
+
+      <section class="admin-panel admin-only">
+        <div class="section-title">管理员</div>
+        <button id="exportBtn">导出 JSON</button>
+        <button id="importBtn">导入 JSON</button>
+        <input id="importFile" type="file" accept="application/json" hidden />
+        <button id="resetBtn" class="danger">恢复示例数据</button>
+      </section>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <h1 id="pageTitle">民企区域总览</h1>
+          <p id="breadcrumb">区域 / 民企区域</p>
+        </div>
+        <div class="top-actions">
+          <div class="segmented">
+            <button id="mode3dBtn" class="active">三维图</button>
+            <button id="mode2dBtn">二维图</button>
+          </div>
+          <button id="logoutBtn" class="outline">退出</button>
+        </div>
+      </header>
+
+      <section class="canvas-card">
+        <div class="toolbar admin-only">
+          <button id="editCurrentBtn">编辑当前楼层布局</button>
+          <button id="addFloorBtn">+ 新增楼层</button>
+          <button id="addAssetBtn">+ 新增设施点位</button>
+          <span id="saveState">本地自动保存</span>
+        </div>
+
+        <div id="view3d" class="view view-3d">
+          <div class="scene" id="scene3d"></div>
+        </div>
+
+        <div id="view2d" class="view view-2d hidden">
+          <div class="plan-shell">
+            <div class="plan-header">
+              <div>
+                <strong id="planTitle">请选择楼层</strong>
+                <span id="planSubtitle">点击左侧楼层或三维楼栋进入二维图</span>
+              </div>
+              <button id="uploadPlanBtn" class="outline admin-only">上传平面图</button>
+              <input id="planFile" type="file" accept="image/*" hidden />
+            </div>
+            <div id="planCanvas" class="plan-canvas"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="data-grid">
+        <div class="panel">
+          <div class="panel-head">
+            <h2>当前对象</h2>
+            <button id="editSelectedBtn" class="outline admin-only">编辑</button>
+          </div>
+          <div id="detailBox" class="detail-box"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head">
+            <h2>设施台账</h2>
+            <button id="quickAssetBtn" class="outline admin-only">新增</button>
+          </div>
+          <div id="assetTable" class="table"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="modal" class="modal hidden">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h2 id="modalTitle">编辑</h2>
+        <button id="modalClose">×</button>
+      </div>
+      <div id="modalBody" class="modal-body"></div>
+      <div class="modal-foot">
+        <button id="modalCancel" class="outline">取消</button>
+        <button id="modalOk">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
 </body>
 </html>
