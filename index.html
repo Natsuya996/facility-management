@@ -3,143 +3,69 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>厂务管理系统 MVP Latest</title>
+  <title>办公区域导视与工位管理系统 MVP</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-<div id="login" class="login-page">
-  <div class="login-card">
-    <h1>厂务管理系统</h1>
-    <p>设施、楼层、配电箱、三维/二维管理 MVP</p>
-    <input id="username" placeholder="账号：admin" />
-    <input id="password" type="password" placeholder="密码：admin123" />
-    <button onclick="login()">登录</button>
-    <small>数据保存在当前浏览器 LocalStorage</small>
-  </div>
-</div>
+  <div id="app">
+    <aside class="sidebar">
+      <div class="brand"><div class="logo">S</div><strong>办公区域导视与工位管理系统</strong></div>
+      <div class="side-section"><div class="side-title">区域管理</div><div id="regionTree"></div></div>
+      <div class="side-section"><div class="side-title">办公楼管理</div><div id="buildingList"></div></div>
+      <div class="side-section"><div class="side-title">楼层管理</div><div id="floorList"></div><button class="primary small" id="addFloorBtn">+ 楼层</button></div>
+      <div class="search"><input placeholder="搜索员工 / 部门 / 工位 / 设备" /></div>
+      <div class="version">© 2024 MVP v4.0</div>
+    </aside>
 
-<div id="app" class="app hidden">
-  <aside class="sidebar">
-    <div class="brand">厂务管理系统</div>
-    <button class="nav active" onclick="switchModule('map')">楼层视图</button>
-    <button class="nav" onclick="switchModule('building')">楼栋三维</button>
-    <button class="nav" onclick="switchModule('assets')">设备管理</button>
-    <button class="nav" onclick="switchModule('settings')">类别字段</button>
-    <button class="nav" onclick="switchModule('data')">数据导入导出</button>
-  </aside>
+    <main class="main">
+      <header class="topbar">
+        <div class="crumb">区域管理 / <span id="crumbRegion">民企区域</span> / <span id="crumbBuilding">5栋</span> / <span id="crumbFloor">1F</span></div>
+        <div class="actions"><button id="resetBtn">刷新</button><button id="exportBtn">导出</button><button id="importBtn">导入</button><button id="saveBtn" class="primary">保存</button><span class="user">admin ▾</span><input type="file" id="importFile" hidden accept="application/json" /></div>
+      </header>
 
-  <main class="main">
-    <header class="topbar">
-      <div>
-        <h2 id="pageTitle">楼层视图</h2>
-        <span id="currentPath">民企区 / 5栋 / 1F</span>
-      </div>
-      <div class="actions">
-        <button onclick="saveData()">保存</button>
-        <button onclick="resetDemo()">恢复示例</button>
-      </div>
-    </header>
-
-    <section id="module-map" class="module grid-layout">
-      <div class="panel tree-panel">
-        <h3>区域楼层</h3>
-        <div class="row"><select id="areaSelect"></select><button onclick="addArea()">+区域</button></div>
-        <div class="row"><select id="buildingSelect"></select><button onclick="addBuilding()">+楼栋</button></div>
-        <div class="row"><select id="floorSelect"></select><button onclick="addFloor()">+楼层</button></div>
-        <hr>
-        <h3>视图模式</h3>
-        <div class="segmented">
-          <button id="btn-top" onclick="setView('top')">俯视图</button>
-          <button id="btn-45" onclick="setView('iso')">45°三维斜视</button>
-          <button id="btn-edit" onclick="setView('edit')">楼层编辑</button>
-        </div>
-        <h3>新增点位</h3>
-        <button onclick="addAsset('配电箱')">+ 配电箱</button>
-        <button onclick="addAsset('空调机组')">+ 空调机组</button>
-        <button onclick="addAsset('水泵')">+ 水泵</button>
-      </div>
-
-      <div class="panel canvas-panel">
+      <section class="hero card">
         <div class="canvas-toolbar">
-          <strong id="viewName">俯视图</strong>
-          <span>点击设备点位可编辑信息；编辑模式下可绘制墙体。</span>
+          <button class="tab active" data-view="region">区域三维总览</button>
+          <button class="tab" data-view="building">楼栋三维</button>
+          <button class="tab" data-view="floor3d">楼层三维</button>
+          <button class="tab" data-view="floor2d">楼层平面图</button>
+          <span class="hint">同一图窗切换，滚轮缩放、拖拽移动、双击复位</span>
         </div>
-        <div id="floorCanvas" class="floor-canvas"></div>
-      </div>
-
-      <div id="editPanel" class="panel edit-panel">
-        <h3>楼层编辑</h3>
-        <label>层高(m)<input id="floorHeight" type="number" step="0.1" /></label>
-        <label>俯视图长度(m)<input id="floorLength" type="number" step="0.1" /></label>
-        <label>俯视图宽度(m)<input id="floorWidth" type="number" step="0.1" /></label>
-        <label>导入平面图<input id="planUpload" type="file" accept="image/*" onchange="uploadPlan(event)" /></label>
-        <button onclick="toggleDrawWall()" id="drawWallBtn">开始绘制墙体</button>
-        <button onclick="autoGenerateWalls()">根据图片/尺寸生成墙体</button>
-        <button onclick="clearWalls()">清空墙体</button>
-        <button onclick="applyFloorSettings()">生成单层三维图</button>
-        <p class="hint">绘制墙体：点击起点和终点生成一段墙。墙体会用于45°三维示意。</p>
-      </div>
-    </section>
-
-    <section id="module-building" class="module hidden">
-      <div class="panel split">
-        <div>
-          <h3>楼栋管理</h3>
-          <label>楼栋名称<input id="bName" /></label>
-          <label>X位置<input id="bX" type="number" /></label>
-          <label>Y位置<input id="bY" type="number" /></label>
-          <label>旋转角度<input id="bRot" type="number" /></label>
-          <button onclick="saveBuildingEdit()">保存楼栋位置</button>
-          <p class="hint">楼栋三维尺寸由各楼层的俯视图长度、宽度、层高累计生成。</p>
+        <div class="view-wrap" id="viewWrap">
+          <svg id="mainSvg" viewBox="0 0 1200 520" role="img"></svg>
         </div>
-        <div>
-          <h3>楼栋三维预览</h3>
-          <div id="building3d" class="building-3d"></div>
+        <div class="floor-switch"><span>楼层选择：</span><div id="floorButtons"></div></div>
+      </section>
+
+      <section class="grid-two">
+        <div class="card editor">
+          <div class="panel-title">楼层编辑</div>
+          <div class="tools">
+            <button id="selectTool" class="active">选择</button><button id="wallTool">绘制墙体</button><button id="deleteWallBtn">删除墙体</button><button id="roomTool">划分房间</button><button id="clearBtn">清空画布</button>
+            <label>墙体宽度 <input id="wallWidth" type="number" value="240" min="80" max="600" /> mm</label>
+            <label>层高 <input id="floorHeight" type="number" value="3.6" step="0.1" min="2" /> m</label>
+          </div>
+          <div class="plan-wrap"><svg id="planSvg" viewBox="0 0 760 420"></svg></div>
+          <div class="current">当前选中：<b id="selectedText">配电箱 DB-1F-001</b></div>
         </div>
-      </div>
-    </section>
 
-    <section id="module-assets" class="module hidden">
-      <div class="panel">
-        <h3>设备列表</h3>
-        <table id="assetTable"></table>
-      </div>
-    </section>
-
-    <section id="module-settings" class="module hidden">
-      <div class="panel split">
-        <div>
-          <h3>设备类别</h3>
-          <div id="categoryList"></div>
-          <button onclick="addCategory()">+ 新增类别</button>
+        <div class="card stats">
+          <div class="panel-title">区域设备统计</div>
+          <div id="statsList"></div>
+          <hr />
+          <div class="panel-title">新增点位</div>
+          <div class="icon-palette" id="palette"></div>
+          <p class="muted">点击图标后，在平面图上点击放置。配电箱与设备使用不同图标。</p>
         </div>
-        <div>
-          <h3>类别自定义字段</h3>
-          <div id="fieldList"></div>
-          <button onclick="addField()">+ 新增字段</button>
-        </div>
-      </div>
-    </section>
+      </section>
 
-    <section id="module-data" class="module hidden">
-      <div class="panel">
-        <h3>数据导入导出</h3>
-        <button onclick="exportJson()">导出 JSON</button>
-        <input type="file" accept="application/json" onchange="importJson(event)">
-        <textarea id="jsonBox" placeholder="导出的JSON会显示在这里"></textarea>
-      </div>
-    </section>
-  </main>
-</div>
-
-<div id="modal" class="modal hidden">
-  <div class="modal-card large">
-    <div class="modal-head"><h3 id="modalTitle">设备信息</h3><button onclick="closeModal()">×</button></div>
-    <div id="modalBody"></div>
-    <div class="modal-foot"><button onclick="closeModal()">取消</button><button onclick="saveAssetModal()">保存</button></div>
+      <section class="card form-card">
+        <div class="panel-title">设备 / 配电箱信息</div>
+        <div class="tabs"><button class="info-tab active" data-info="base">基本信息</button><button class="info-tab" data-info="in">进线信息</button><button class="info-tab" data-info="out">出线信息</button><button class="info-tab" data-info="maint">保养记录</button><button class="info-tab" data-info="custom">类别字段</button></div>
+        <div id="formArea"></div>
+      </section>
+    </main>
   </div>
-</div>
-
-<script src="app.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
