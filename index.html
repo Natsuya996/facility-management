@@ -1,68 +1,58 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>办公区域导视与工位管理系统 MVP</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>办公区域导视与工位管理系统 MVP v5</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div id="app">
     <aside class="sidebar">
-      <div class="brand"><div class="logo">S</div><strong>办公区域导视与工位管理系统</strong></div>
-      <div class="side-section"><div class="side-title">区域管理</div><div id="regionTree"></div></div>
-      <div class="side-section"><div class="side-title">办公楼管理</div><div id="buildingList"></div></div>
-      <div class="side-section"><div class="side-title">楼层管理</div><div id="floorList"></div><button class="primary small" id="addFloorBtn">+ 楼层</button></div>
-      <div class="search"><input placeholder="搜索员工 / 部门 / 工位 / 设备" /></div>
-      <div class="version">© 2024 MVP v4.0</div>
+      <div class="brand"><div class="logo">S</div><div><b>办公区域导视与工位管理系统</b><span>MVP v5</span></div></div>
+      <div class="section"><h4>区域管理</h4><button class="nav active" data-area="民企区域">民企区域</button><button class="nav" data-area="德意区域">德意区域</button><button class="nav" data-area="石岩区域">石岩区域</button><button class="nav" data-area="坪山区">坪山区</button></div>
+      <div class="section"><h4>办公楼管理</h4><div id="buildingList"></div></div>
+      <div class="section"><h4>楼层管理</h4><div id="floorList"></div><button id="addFloor" class="small primary">+ 楼层</button></div>
+      <div class="section"><h4>统一搜索</h4><input id="search" placeholder="搜索员工 / 部门 / 工位 / 设备" /></div>
     </aside>
 
     <main class="main">
       <header class="topbar">
-        <div class="crumb">区域管理 / <span id="crumbRegion">民企区域</span> / <span id="crumbBuilding">5栋</span> / <span id="crumbFloor">1F</span></div>
-        <div class="actions"><button id="resetBtn">刷新</button><button id="exportBtn">导出</button><button id="importBtn">导入</button><button id="saveBtn" class="primary">保存</button><span class="user">admin ▾</span><input type="file" id="importFile" hidden accept="application/json" /></div>
+        <div><button class="ghost">☰</button><span class="crumb">区域管理 / <b id="crumbArea">民企区域</b> / <b id="crumbBuilding">5栋</b> / <b id="crumbFloor">1F</b></span></div>
+        <div class="actions"><button id="resetView">复位视图</button><button id="saveBtn">保存</button><button id="exportBtn">导出</button><button id="importBtn">导入</button><input type="file" id="importFile" hidden accept="application/json"/><span class="user">admin ▾</span></div>
       </header>
 
       <section class="hero card">
-        <div class="canvas-toolbar">
-          <button class="tab active" data-view="region">区域三维总览</button>
-          <button class="tab" data-view="building">楼栋三维</button>
-          <button class="tab" data-view="floor3d">楼层三维</button>
-          <button class="tab" data-view="floor2d">楼层平面图</button>
-          <span class="hint">同一图窗切换，滚轮缩放、拖拽移动、双击复位</span>
-        </div>
-        <div class="view-wrap" id="viewWrap">
-          <svg id="mainSvg" viewBox="0 0 1200 520" role="img"></svg>
-        </div>
-        <div class="floor-switch"><span>楼层选择：</span><div id="floorButtons"></div></div>
-      </section>
-
-      <section class="grid-two">
-        <div class="card editor">
-          <div class="panel-title">楼层编辑</div>
-          <div class="tools">
-            <button id="selectTool" class="active">选择</button><button id="wallTool">绘制墙体</button><button id="deleteWallBtn">删除墙体</button><button id="roomTool">划分房间</button><button id="clearBtn">清空画布</button>
-            <label>墙体宽度 <input id="wallWidth" type="number" value="240" min="80" max="600" /> mm</label>
-            <label>层高 <input id="floorHeight" type="number" value="3.6" step="0.1" min="2" /> m</label>
+        <div class="heroHead">
+          <h2><span id="titleArea">民企区域</span>总览 / <span id="titleBuilding">5栋</span> / <span id="titleFloor">1F</span></h2>
+          <div class="tabs">
+            <button class="tab active" data-view="region">区域三维总览</button>
+            <button class="tab" data-view="building">楼栋三维</button>
+            <button class="tab" data-view="floor3d">楼层三维</button>
+            <button class="tab" data-view="floor2d">楼层平面图</button>
           </div>
-          <div class="plan-wrap"><svg id="planSvg" viewBox="0 0 760 420"></svg></div>
-          <div class="current">当前选中：<b id="selectedText">配电箱 DB-1F-001</b></div>
         </div>
-
-        <div class="card stats">
-          <div class="panel-title">区域设备统计</div>
-          <div id="statsList"></div>
-          <hr />
-          <div class="panel-title">新增点位</div>
-          <div class="icon-palette" id="palette"></div>
-          <p class="muted">点击图标后，在平面图上点击放置。配电箱与设备使用不同图标。</p>
+        <div class="viewerWrap">
+          <div class="toolRail"><button data-tool="select" class="tool active">选择</button><button data-tool="wall" class="tool">绘制墙体</button><button data-tool="room" class="tool">划分房间</button><button data-tool="measure" class="tool">测量</button><button id="clearWalls" class="tool">清空</button></div>
+          <div id="viewport" class="viewport"><div id="canvasLayer" class="canvasLayer"></div></div>
+          <div class="stats cardMini"><h4>区域设备统计</h4><p>⚡ 配电箱 <b id="statBox">0</b> 台</p><p>❄️ 空调机组 <b id="statAc">0</b> 台</p><p>🚰 水泵 <b id="statPump">0</b> 台</p><p>🔥 消防栓 <b id="statFire">0</b> 个</p><button>查看详情</button></div>
         </div>
+        <div class="floorButtons">楼层选择：<span id="floorBtns"></span></div>
       </section>
 
-      <section class="card form-card">
-        <div class="panel-title">设备 / 配电箱信息</div>
-        <div class="tabs"><button class="info-tab active" data-info="base">基本信息</button><button class="info-tab" data-info="in">进线信息</button><button class="info-tab" data-info="out">出线信息</button><button class="info-tab" data-info="maint">保养记录</button><button class="info-tab" data-info="custom">类别字段</button></div>
-        <div id="formArea"></div>
+      <section class="lowerGrid">
+        <div class="card editor">
+          <h3>楼层编辑</h3>
+          <div class="formRow"><label>墙体宽度</label><select id="wallWidth"><option value="120">120 mm</option><option value="180">180 mm</option><option value="240" selected>240 mm</option><option value="300">300 mm</option></select><label>层高设置</label><input id="floorHeight" type="number" step="0.1" value="3.6" /> <span>m</span></div>
+          <div class="hint">绘制墙体时会自动吸附为横平竖直；墙体宽度和层高会同步到三维视图。</div>
+          <div class="formRow"><label>楼栋尺寸</label><input id="buildW" type="number" value="36"/> × <input id="buildD" type="number" value="24"/> m <label>位置</label>X<input id="buildX" type="number" value="0"/> Y<input id="buildY" type="number" value="0"/></div>
+        </div>
+        <div class="card addPanel"><h3>新增点位</h3><div class="palette"><button data-add="box">⚡<span>配电箱</span></button><button data-add="ac">❄️<span>空调机组</span></button><button data-add="pump">🚰<span>水泵</span></button><button data-add="fire">🔥<span>消防栓</span></button><button data-add="fan">♻️<span>新风机组</span></button><button data-add="light">💡<span>照明灯具</span></button><button data-add="weak">🟪<span>弱电箱</span></button><button data-add="other">⚙️<span>其他设备</span></button></div><p class="hint">点击图标后，再在图窗内点击放置点位。</p></div>
+      </section>
+
+      <section class="card detail">
+        <h3>选中设备：<span id="selectedName">未选择</span></h3>
+        <div id="detailForm" class="detailForm"></div>
       </section>
     </main>
   </div>
